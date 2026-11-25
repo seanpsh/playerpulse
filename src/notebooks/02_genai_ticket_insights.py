@@ -46,7 +46,8 @@ Classify the message:
 Respond with ONLY a JSON object with keys category, sentiment, churn_intent, spend_stop_intent, severity, summary.
 No prose, no code fences.
 Message: """
-SCHEMA = "category STRING, sentiment INT, churn_intent BOOLEAN, spend_stop_intent BOOLEAN, severity INT, summary STRING"
+# sentiment/severity parsed as STRING then try_cast: a stray word ("neutral") must not null out the whole record
+SCHEMA = "category STRING, sentiment STRING, churn_intent BOOLEAN, spend_stop_intent BOOLEAN, severity STRING, summary STRING"
 
 # Newer Claude models reject ai_query's forced-tool structured output (responseFormat), so we ask for strict JSON in
 # the prompt and parse with from_json. Unparseable rows keep extraction_error and are retried on the next run.
@@ -67,7 +68,7 @@ if todo > 0:
     ),
     parsed AS (SELECT *, from_json(regexp_extract(resp.result, '(?s)[{{].*[}}]', 0), '{SCHEMA}') AS r FROM scored)
     SELECT ticket_id, player_id, created_date, channel, message,
-      upper(r.category), r.sentiment, r.churn_intent, r.spend_stop_intent, r.severity, r.summary,
+      upper(r.category), try_cast(r.sentiment AS INT), r.churn_intent, r.spend_stop_intent, try_cast(r.severity AS INT), r.summary,
       '{MODEL}', current_timestamp(),
       coalesce(resp.errorMessage, CASE WHEN r.category IS NULL THEN concat('unparsed: ', left(resp.result, 200)) END)
     FROM parsed

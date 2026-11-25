@@ -10,7 +10,9 @@ while r.get("status", {}).get("state") in ("PENDING", "RUNNING"):
                                   capture_output=True, text=True).stdout)
 if r.get("status", {}).get("state") != "SUCCEEDED":
     print("ERROR:", json.dumps(r.get("status"))[:1500]); sys.exit(1)
-cols = [c["name"] for c in r["manifest"]["schema"]["columns"]]
+cols = [c["name"] for c in r.get("manifest", {}).get("schema", {}).get("columns", [])]
+if not cols:
+    print("OK (no result set)"); sys.exit(0)
 print("| " + " | ".join(cols) + " |\n|" + "---|" * len(cols))
 for row in r.get("result", {}).get("data_array", []) or []:
     print("| " + " | ".join("" if v is None else str(v).replace("\n", " ") for v in row) + " |")
