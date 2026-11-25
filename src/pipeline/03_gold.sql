@@ -14,27 +14,27 @@ AS SELECT * FROM VALUES
 AS t(assumption, value, description);
 
 CREATE OR REFRESH MATERIALIZED VIEW gold_daily_kpis
-COMMENT 'Daily title KPIs by platform and region: DAU, installs, engagement, crash rate, net revenue, payers, ARPDAU, ARPPU.'
+COMMENT 'Daily title KPIs by platform, device tier and region: DAU, installs, engagement, crash rate, net revenue, payers, ARPDAU, ARPPU.'
 AS WITH act AS (
-  SELECT d.activity_date AS kpi_date, p.platform, p.region,
+  SELECT d.activity_date AS kpi_date, p.platform, p.device_tier, p.region,
     count(*) AS dau, sum(d.sessions) AS sessions, round(sum(d.minutes_played), 0) AS minutes_played,
     sum(d.matches) AS matches, sum(d.crashes) AS crashes, sum(d.energy_walls) AS energy_walls
   FROM silver_player_daily d JOIN silver_players p USING (player_id) GROUP BY ALL
 ), rev AS (
-  SELECT s.purchase_date AS kpi_date, p.platform, p.region,
+  SELECT s.purchase_date AS kpi_date, p.platform, p.device_tier, p.region,
     round(sum(s.amount_usd), 2) AS net_revenue_usd, count(DISTINCT s.player_id) AS payers
   FROM silver_purchases s JOIN silver_players p USING (player_id) GROUP BY ALL
 ), inst AS (
-  SELECT install_date AS kpi_date, platform, region, count(*) AS installs FROM silver_players GROUP BY ALL
+  SELECT install_date AS kpi_date, platform, device_tier, region, count(*) AS installs FROM silver_players GROUP BY ALL
 )
-SELECT a.kpi_date, a.platform, a.region, a.dau, coalesce(i.installs, 0) AS installs,
+SELECT a.kpi_date, a.platform, a.device_tier, a.region, a.dau, coalesce(i.installs, 0) AS installs,
   a.sessions, a.minutes_played, a.matches, a.crashes, round(a.crashes / a.sessions, 4) AS crash_rate_per_session,
   a.energy_walls, coalesce(r.net_revenue_usd, 0) AS net_revenue_usd, coalesce(r.payers, 0) AS payers,
   round(coalesce(r.net_revenue_usd, 0) / a.dau, 4) AS arpdau_usd,
   round(coalesce(r.net_revenue_usd, 0) / nullif(r.payers, 0), 2) AS arppu_usd
 FROM act a
-LEFT JOIN rev r USING (kpi_date, platform, region)
-LEFT JOIN inst i USING (kpi_date, platform, region);
+LEFT JOIN rev r USING (kpi_date, platform, device_tier, region)
+LEFT JOIN inst i USING (kpi_date, platform, device_tier, region);
 
 CREATE OR REFRESH MATERIALIZED VIEW gold_retention_cohorts
 COMMENT 'Install-week cohort retention: share of installs active on day 1, 7 and 30 after install (classic Dn retention).'

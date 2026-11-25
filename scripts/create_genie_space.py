@@ -25,7 +25,7 @@ TABLES = sorted([
 
 INSTRUCTIONS = """You answer questions for Emberforge Studios' LiveOps, product and executive teams about the mobile RPG Emberline: Rift Tactics.
 Definitions:
-- DAU = distinct players active on a day (gold_daily_kpis.dau, sum across platform/region for title-level). ARPDAU = net revenue / DAU. ARPPU = net revenue / payers.
+- DAU = distinct players active on a day (gold_daily_kpis.dau; grain is date x platform x device_tier x region, so sum across them for title level). Crash rate = sum(crashes)/sum(sessions) (never average crash_rate_per_session). ARPDAU = net revenue / DAU. ARPPU = net revenue / payers.
 - Lapse / churn: a player active in the prior 7 days who does not play in the next 14 days. gold_weekly_churn has lapse_rate_14d by week_start and payer_tier.
   For a period, compute sum(lapsed_14d) / sum(active_players); do not average rates.
 - Payer tiers by trailing 90-day net spend: non_payer (0), minnow (<$20), dolphin ($20-100), whale ($100+).

@@ -10,7 +10,7 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 # 1. Lakebase instance + Postgres database (created through the admin job; direct PG access from laptops may be blocked)
 databricks -p "$P" database get-database-instance $INST >/dev/null 2>&1 || \
   databricks -p "$P" database create-database-instance $INST --capacity CU_1
-databricks -p "$P" bundle run playerpulse_lakebase_admin --params "sql=CREATE DATABASE $DB" || true
+python3 "$HERE/pg_admin.py" "$P" databricks_postgres "CREATE DATABASE $DB"
 
 # 2. Synced table: Delta retention queue (CDF) -> Lakebase Postgres, triggered refresh (job task 06 triggers it)
 databricks -p "$P" database get-synced-database-table "$C.playerpulse_serving.player_retention_queue_synced" >/dev/null 2>&1 || \
@@ -50,7 +50,7 @@ for stmt in \
 done
 
 # 5. Postgres grants: app SP reads the synced serving schema (it owns its own ops schema)
-databricks -p "$P" bundle run playerpulse_lakebase_admin --params "database=$DB,sql=GRANT USAGE ON SCHEMA playerpulse_serving TO \"$SP\";; GRANT SELECT ON ALL TABLES IN SCHEMA playerpulse_serving TO \"$SP\";; ALTER DEFAULT PRIVILEGES IN SCHEMA playerpulse_serving GRANT SELECT ON TABLES TO \"$SP\""
+python3 "$HERE/pg_admin.py" "$P" "$DB" "GRANT USAGE ON SCHEMA playerpulse_serving TO \"$SP\";; GRANT SELECT ON ALL TABLES IN SCHEMA playerpulse_serving TO \"$SP\";; ALTER DEFAULT PRIVILEGES IN SCHEMA playerpulse_serving GRANT SELECT ON TABLES TO \"$SP\""
 
 # 6. Deploy app source (uploaded by `bundle deploy` to the bundle files path)
 ROOT=$(databricks -p "$P" bundle validate -o json | python3 -c "import json,sys;print(json.load(sys.stdin)['workspace']['file_path'])")

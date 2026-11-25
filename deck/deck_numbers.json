@@ -1,0 +1,19 @@
+{
+  "_source": "Databricks job run 931556335206949 (fevm-aws-demo): playerpulse_ml.model_backtest_value, gold_weekly_churn, gold_daily_kpis, player_retention_queue, MLflow metrics. See evidence/.",
+  "net_uplift_pct": 78.3,
+  "incremental_annual": 37316,
+  "incremental_per_1m_dau": 1401130,
+  "revenue_reached_pp_pct": 86.9,
+  "revenue_reached_sq_pct": 68.1,
+  "sq_reached": 50619, "pp_reached": 64635,
+  "sq_net": 9162, "pp_net": 16339,
+  "sq_players": 300, "pp_players": 256,
+  "lapse_by_season": {"S6": {"all": 0.01009, "whale": 0.00805}, "S7": {"all": 0.02453, "whale": 0.01335}, "S8": {"all": 0.01329, "whale": 0.01003}},
+  "crash_low_before": 0.0446, "crash_low_v72": 0.2652,
+  "tickets": 27395, "scored": 43874, "telemetry_rows": 6165398,
+  "auc": 0.8864, "auc_dsl": 0.8348, "auc_noai": 0.8866,
+  "lapse_base": 0.0195, "lapse_payment": 0.0527, "lapse_intent": 0.0382,
+  "lookup_ms": 3.1,
+  "nba": [["SUPPORT_ESCALATION", 160, 4603], ["PERSONALISED_OFFER", 4336, 2924], ["EVENT_REENGAGEMENT_PUSH", 32606, 1323],
+          ["GUILD_MATCH_INVITE", 4194, 171], ["TECH_FIX_AND_APOLOGY_GIFT", 2476, 80], ["SAFETY_REVIEW", 102, 8]]
+}

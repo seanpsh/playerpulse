@@ -72,7 +72,6 @@ FROM {S}.player_retention_queue GROUP BY ALL ORDER BY ALL"""),
 SELECT DISTINCT source_table_full_name, target_table_full_name FROM system.access.table_lineage
 WHERE target_table_full_name LIKE '{C}.playerpulse%' AND source_table_full_name IS NOT NULL AND event_date >= current_date() - INTERVAL 7 DAYS
 ORDER BY 2, 1"""),
-    ("ML: model registered in Unity Catalog", f"SELECT full_name, comment FROM {C}.information_schema.registered_models WHERE schema_name = 'playerpulse_ml'"),
 ]
 lines = ["# SQL verification queries (real results from the Databricks SQL warehouse)", "",
          f"Captured {time.strftime('%Y-%m-%d %H:%M UTC', time.gmtime())} · warehouse `{wh}` · catalog `{C}`", ""]
