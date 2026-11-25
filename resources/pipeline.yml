@@ -1,0 +1,16 @@
+resources:
+  pipelines:
+    playerpulse_lakeflow:
+      name: playerpulse-game-data-lakeflow
+      catalog: ${var.catalog}
+      schema: playerpulse_game
+      serverless: true
+      photon: true
+      channel: CURRENT
+      continuous: false
+      configuration:
+        catalog: ${var.catalog}
+      libraries:
+        - file: {path: ../src/pipeline/01_bronze.sql}
+        - file: {path: ../src/pipeline/02_silver.sql}
+        - file: {path: ../src/pipeline/03_gold.sql}

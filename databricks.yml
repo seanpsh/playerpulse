@@ -1,0 +1,26 @@
+bundle:
+  name: playerpulse
+
+variables:
+  catalog:
+    description: Unity Catalog catalog for all PlayerPulse assets
+    default: aws_demo_catalog
+  extraction_model:
+    description: Foundation Model endpoint that classifies support tickets
+    default: databricks-claude-haiku-5-5
+  message_model:
+    description: Foundation Model endpoint that drafts win-back messages
+    default: databricks-claude-sonnet-5-5
+  lakebase_instance:
+    description: Lakebase (provisioned) database instance serving the app and game backend
+    default: playerpulse-lakebase
+
+include:
+  - resources/*.yml
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://fevm-aws-demo.cloud.databricks.com

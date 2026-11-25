@@ -1,0 +1,13 @@
+resources:
+  jobs:
+    playerpulse_lakebase_admin:
+      name: playerpulse-lakebase-admin
+      description: Run Postgres admin / check statements against the PlayerPulse Lakebase instance (statements separated by ;;)
+      parameters:
+        - {name: instance, default: playerpulse-lakebase}
+        - {name: database, default: databricks_postgres}
+        - {name: sql, default: "SELECT current_user, version()"}
+      tasks:
+        - task_key: pg
+          notebook_task:
+            notebook_path: ../src/notebooks/07_lakebase_admin.py

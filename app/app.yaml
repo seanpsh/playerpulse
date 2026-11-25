@@ -1,0 +1,6 @@
+command: ["streamlit", "run", "app.py", "--server.headless", "true"]
+env:
+  - name: GENIE_SPACE_ID
+    valueFrom: genie-space
+  - name: QUEUE_TABLE
+    value: playerpulse_serving.player_retention_queue_synced

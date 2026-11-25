@@ -1,0 +1,48 @@
+resources:
+  jobs:
+    playerpulse_daily:
+      name: playerpulse-daily-refresh
+      description: "PlayerPulse end-to-end: land raw game data -> Lakeflow pipeline -> GenAI ticket insights -> churn model train/score -> retention queue + GenAI messages -> UC governance -> Lakebase sync"
+      schedule:
+        quartz_cron_expression: "0 0 6 * * ?"
+        timezone_id: UTC
+        pause_status: PAUSED
+      max_concurrent_runs: 1
+      tags:
+        project: playerpulse
+        industry: games
+      tasks:
+        - task_key: land_raw_data
+          notebook_task:
+            notebook_path: ../src/notebooks/00_setup_and_land_raw_data.py
+            base_parameters: {catalog: "${var.catalog}"}
+        - task_key: lakeflow_pipeline
+          depends_on: [{task_key: land_raw_data}]
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.playerpulse_lakeflow.id}
+            full_refresh: false
+        - task_key: genai_ticket_insights
+          depends_on: [{task_key: lakeflow_pipeline}]
+          notebook_task:
+            notebook_path: ../src/notebooks/02_genai_ticket_insights.py
+            base_parameters: {catalog: "${var.catalog}", extraction_model: "${var.extraction_model}"}
+        - task_key: train_and_score_churn_model
+          depends_on: [{task_key: genai_ticket_insights}]
+          notebook_task:
+            notebook_path: ../src/notebooks/03_train_and_score_churn_model.py
+            base_parameters: {catalog: "${var.catalog}"}
+        - task_key: retention_queue_and_ai_messages
+          depends_on: [{task_key: train_and_score_churn_model}]
+          notebook_task:
+            notebook_path: ../src/notebooks/04_build_retention_queue_and_ai_messages.py
+            base_parameters: {catalog: "${var.catalog}", message_model: "${var.message_model}", n_messages: "200"}
+        - task_key: unity_catalog_governance
+          depends_on: [{task_key: retention_queue_and_ai_messages}]
+          notebook_task:
+            notebook_path: ../src/notebooks/05_unity_catalog_governance.py
+            base_parameters: {catalog: "${var.catalog}"}
+        - task_key: lakebase_sync_and_feedback
+          depends_on: [{task_key: retention_queue_and_ai_messages}]
+          notebook_task:
+            notebook_path: ../src/notebooks/06_lakebase_sync_and_feedback.py
+            base_parameters: {catalog: "${var.catalog}", instance: "${var.lakebase_instance}", database: playerpulse}
