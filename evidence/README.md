@@ -16,4 +16,5 @@ Everything here was captured from live runs on the workspace, as text. Nothing i
 | `genie_conversations.md` | 6 real questions to the Genie space, with generated SQL and result rows | e.g. whale lapse 0.805% → 1.335%; low-tier crash spike after v7.2 |
 | `lakebase_checks.md` | Postgres queries via the Lakebase admin job | App service-principal role exists; grants applied; 43,874 rows in Lakebase |
 | `model_registry.md` | UC model registry entry | `aws_demo_catalog.playerpulse_ml.player_churn_risk`, alias `champion` |
+| `run_3_feedback_loop/lakebase_sync_and_feedback.md` + `lakebase_checks.md` (bottom) | **App write path and feedback loop**: an intervention approved in the app UI was written to Lakebase `ops.interventions` (app service principal connected) and snapshotted back to Delta `interventions_snapshot` | intervention #1 for top-priority whale P0046644, `approved_by` from SSO |
 | `app_check.md` | Databricks App deployed with Lakebase, SQL warehouse and Genie resources | App RUNNING, deployment SUCCEEDED |
