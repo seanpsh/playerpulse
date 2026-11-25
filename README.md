@@ -159,7 +159,7 @@ The build was pair-programmed with **Claude Code** (Claude Opus 5.5) driving the
 
 - **Deck:** `deck/PlayerPulse_deck.pdf` (also `.pptx`, and a `.txt` text export)
 - **Evidence index:** `evidence/README.md`
-- **Live demo runbook (Yoodli role-play):** `docs/yoodli_demo_runbook.md`
+- **Live demo (Yoodli role-play):** word-for-word script `docs/yoodli_demo_script.md`; prep and click path `docs/yoodli_demo_runbook.md`
 
 ## Reproduce
 
